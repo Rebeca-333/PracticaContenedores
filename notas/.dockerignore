@@ -1,0 +1,25 @@
+# Entrega del compañero solo se audita; no forma parte de la imagen
+sin-revisar/
+
+# Artefactos de Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# Secretos y configuración local
+.env
+.env.*
+*.log
+
+# Documentación y propios archivos de build
+Dockerfile
+.dockerignore
+*.md
