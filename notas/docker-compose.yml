@@ -1,0 +1,38 @@
+services:
+  # Aplicación Flask (Gunicorn) construida desde el Dockerfile de esta carpeta.
+  # Las variables de entorno se declaran AQUÍ, nunca en la imagen.
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      REDIS_URL: "redis://cache:6379/0"
+      TITULO_APP: "Tablón de notas"
+    # No arranca hasta que Redis responda PONG (healthcheck de 'cache').
+    depends_on:
+      cache:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Redis: solo accesible desde la red interna de Compose (sin 'ports').
+  cache:
+    image: redis:7-alpine
+    expose:
+      - "6379"
+    # Persistencia activa: Append Only File en /data (sobrevive reinicios).
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    # Healthcheck oficial de la imagen Redis.
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped
+
+# Volumen con nombre fijo para los datos de Redis.
+volumes:
+  redis-data:
+    name: notas-redis-data
